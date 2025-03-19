@@ -9,5 +9,4 @@
 <template>
     <h1>{{ title }}</h1>
     <h2>{{ $route.params.username }}</h2>
-    <h3>{{ username }}</h3>
 </template>

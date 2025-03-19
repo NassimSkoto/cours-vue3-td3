@@ -6,20 +6,39 @@ const text = ref("");
 const trimmedText = computed(() => text.value.trim());
 const posts = ref([]);
 
-function addPost() {
-  const newPost = {
-    id: Math.random().toString(36).substring(2),
-    content: trimmedText.value,
-    createdAt: new Date(),
-    author: {
-      id: Math.random().toString(36).substring(2),
-      username: "Skoto",
-      avatarUrl: "https://i.pravatar.cc/2002",
+// function addPost() {
+//   const newPost = {
+//     id: Math.random().toString(36).substring(2),
+//     content: trimmedText.value,
+//     createdAt: new Date(),
+//     author: {
+//       id: Math.random().toString(36).substring(2),
+//       username: "Alderiate",
+//       avatarUrl: "https://cdn.prod.website-files.com/60ebfa6df1e9a8c6c2e6ca9f/61d39fa3b0f8f1ba249c4969_Alderiate_633A3858.jpg",
+//     },
+//     liked: false, // Initial state for like
+//   };
+//   posts.value.push(newPost);
+//   text.value = "";
+// }
+
+function addPost(){
+  const token = JSON.parse(localStorage.getItem("user")).token
+  fetch("https://posts-crud-api.vercel.app/posts",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${ token}`
     },
-    liked: false, // Initial state for like
-  };
-  posts.value.push(newPost);
-  text.value = "";
+    body: JSON.stringify({
+      content: trimmedText.value
+    })
+  })
+  .then((response)=>response.json())
+  .then((data)=>{
+    console.log(data);
+    text.value=""
+  })
 }
 
 function deletePost(id) {
@@ -67,7 +86,7 @@ fetchPosts()
       <p v-if="loading">Chargement ...</p>
       <p v-else-if="!apiPosts.length">Pas de post pour le moment.</p>
       <PostCard
-        v-for="(post, index) in apiPosts"
+        v-for="(post) in apiPosts"
         :key="post.id"
         :post="post"
         @delete="deletePost"
